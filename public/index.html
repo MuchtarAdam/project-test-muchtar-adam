@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suitmedia</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <style>
+        .active {
+            border-bottom: 3px solid white;
+        }
+
+        nav {
+            background: #ff6600;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            transition: 0.5s;
+        }
+
+        nav.hidden {
+            background: rgba(255, 102, 0, 0);
+        }
+
+        nav.transparent {
+            background: rgba(255, 102, 0, 0.8);
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav class="bg-[#ff6600]">
+        <div class="px-24 mx-auto">
+
+            <div class="flex items-center justify-between h-24">
+
+                <div class="cursor-pointer group">
+                    <div class="flex items-center transition-transform sm:justify-start group-hover:scale-105">
+                        <div class="flex items-center justify-between px-3 ">
+                            <img src="../src/asset/logo.png" alt="Suitmedia" class="w-32 h-auto">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end flex-1">
+                    <a onclick="handleClick(this)"
+                        class="py-3 mx-4 font-sans text-xl font-normal text-white cursor-pointer nav-link">Work</a>
+                    <a onclick="handleClick(this)"
+                        class="py-3 mx-4 font-sans text-xl font-normal text-white cursor-pointer nav-link">About</a>
+                    <a onclick="handleClick(this)"
+                        class="py-3 mx-4 font-sans text-xl font-normal text-white cursor-pointer nav-link">Services</a>
+                    <a onclick="handleClick(this)"
+                        class="py-3 mx-4 font-sans text-xl font-normal text-white cursor-pointer nav-link">Ideas</a>
+                    <a onclick="handleClick(this)"
+                        class="py-3 mx-4 font-sans text-xl font-normal text-white cursor-pointer nav-link">Careers</a>
+                    <a onclick="handleClick(this)"
+                        class="py-3 mx-4 font-sans text-xl font-normal text-white cursor-pointer nav-link">Contact</a>
+                </div>
+
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="flex justify-between px-16 pt-56 mx-auto">
+        <div class="mb-4">
+            <p class="text-gray-600">Showing 1-10 of 100 results</p>
+        </div>
+
+        <div class="mb-4">
+            <label for="showPerPage" class="text-gray-600">Show per page:</label>
+            <select id="showPerPage" class="px-2 py-1 border rounded">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="sortBy" class="text-gray-600">Sort by:</label>
+            <select id="sortBy" class="px-2 py-1 border rounded">
+                <option value="newest">Newest</option>
+                <option value="latest">Latest</option>
+            </select>
+        </div>
+
+
+    </div>
+
+    <section id="content">
+        <div class="grid grid-cols-4 grid-rows-2 gap-10 pt-24 px-36" id="cardContainer">
+
+        </div>
+    </section>
+
+    <ul class="flex justify-center space-x-2 mt-9">
+        <li class="w-10 h-auto">
+            <img
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAArklEQVR4nO3Y0QqCQBRF0f2FZTGDD/bvQUEFfYKBMjAQhD537uUs8N3DVnAEs9ROwBN4A4WgRmAGln61MeFHLMCLBCNm4EwgdWPEB5gIxCNUuIQKl1DhEipcQoVLqKj+ABRRM5QYdg5F7bAUyj3DiFRDhiyPFv3/09bLfiGg4jGiisuIKi4jqriMKJdR5TKqXEZVqjLjzuHsSJIxN4L6HfMgsPY4XXuNw79vxoyvFeVU7Pycczv1AAAAAElFTkSuQmCC">
+        </li>
+
+        <li class="px-4 py-2 text-white bg-blue-500 rounded">1</li>
+        <li class="px-4 py-2 bg-white border rounded">2</li>
+        <li class="px-4 py-2 bg-white border rounded">3</li>
+        <li class="px-4 py-2 bg-white border rounded">5</li>
+        <li class="w-10 h-auto">
+            <img
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAqklEQVR4nO3ZQQrCQBBE0e8JDdJDFvHsLgwKQW8QQQmM4MLsq5t6ILhM8SeQKJhJacATuAEDSR2AB/DunxUYSWr5GZJ6zKlffIkx8WfMCziTUHiMqHAZUeEyosJlRLmMKpdR5TKqSpUZd17OBoqMmSky5EoyJY5W27nZJxLxCBUuocIlVLiECpdQ4RIqmh8ARbQKJY5V/gydK4zY3CuM+B6t7UeCS/9uVtUHEhTs/ZXHkMQAAAAASUVORK5CYII=">
+        </li>
+
+    </ul>
+
+
+    <script>
+
+        const apiUrl = 'https://suitmedia-backend.suitdev.com/api/ideas';
+
+        function fetchAndDisplayData(pageNumber) {
+            let pageSize = $('#showPerPage').val();
+            $.getJSON(apiUrl, {
+                'page[number]': pageNumber,
+                'page[size]': pageSize,
+                'append[]': ['small_image', 'medium_image'],
+                'sort': 'published_at'
+            }, function (data) {
+                let ideasData = data.data;
+
+                console.log(data);
+
+                $.each(ideasData, function (i, idea) {
+
+                    let content = idea.content;
+                    let title = idea.title;
+
+                    let images = $(content).find('img');
+                    let imageUrl = images.length > 0 ? images[0].src : 'default-image-url';
+
+                    let published_at = new Date(idea.published_at);
+                    let formattedDate = published_at.toLocaleDateString('id-ID', { month: 'long', day: 'numeric', year: 'numeric' });
+
+                    let card = $('<div class="overflow-hidden shadow-xl cursor-pointer card rounded-xl"></div>');
+                    card.append('<div class="content"><img src="' + imageUrl + '" alt="Image"></div>');
+                    card.append('<div class="px-3 pt-5 font-semibold uppercase published_at text-slate-500">' + formattedDate + '</div>');
+                    card.append('<div class="px-3 font-bold uppercase text-md title">' + title + '</div>');
+
+                    $('#cardContainer').append(card);
+                });
+
+                let totalResults = data.meta.total_items;
+                let startResult = (pageNumber - 1) * pageSize + 1;
+                let endResult = Math.min(pageNumber * pageSize, totalResults);
+
+                $('#showingInfo').text(`Showing ${startResult}-${endResult} of ${totalResults} results`);
+
+                function updatePaginationButtons(pageNumber, totalPages) {
+                }
+
+            });
+        }
+
+        fetchAndDisplayData(1);
+
+        $(document).on('click', '.pagination-button', function () {
+            let pageNumber = $(this).data('page');
+            fetchAndDisplayData(pageNumber);
+        });
+
+        function handleClick(element) {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            element.classList.add('active');
+        }
+
+        $(document).ready(function () {
+            var lastScrollTop = 0;
+
+            $(window).scroll(function () {
+                var st = $(this).scrollTop();
+
+                if (st > lastScrollTop) {
+                    $('nav').addClass('hidden');
+                } else {
+                    $('nav').removeClass('hidden');
+                    if (st === 0) {
+                        $('nav').removeClass('transparent');
+                    } else {
+                        $('nav').addClass('transparent');
+                    }
+                }
+
+                lastScrollTop = st;
+            });
+        });
+
+    </script>
+
+
+
+</body>
+
+</html>
